@@ -1,0 +1,166 @@
+<div class="player-title">همین حالا پلی کن!</div>
+<div class="player-desc">
+    میتونی دانلودش کنی! یا دوستات رو با اشتراک گذاری با همینجا گوش بدی
+</div>
+
+<!-- Banner with overlay text -->
+<div class="music-banner-box">
+    <img class="banner-img" src="{{ asset('assets/images/banner.png') }}" alt="banner"/>
+</div>
+
+<!-- Custom Audio Player -->
+<div class="audio-player-custom" dir="ltr">
+    <audio id="audio-player" src="{{ asset('assets/Bbal.mp3') }}"></audio>
+    <div class="progress-row">
+        <span class="progress-time" id="current-time">00:00</span>
+        <div class="progress-bar-wrap">
+            <div class="progress-bar" id="progress-bar">
+                <div class="progress-bar-filled" id="progress-bar-filled"></div>
+                <div class="progress-knob" id="progress-knob"></div>
+            </div>
+        </div>
+        <span class="progress-time" id="total-duration">00:00</span>
+    </div>
+    <div class="player-controls-row">
+        <button class="player-btn" id="prev-btn" title="قبلی" disabled>
+            <svg width="34" height="34" viewBox="0 0 34 34"><polygon points="25,7 13,17 25,27" fill="#4A2A70"/><rect x="8" y="7" width="3" height="20" fill="#4A2A70"/></svg>
+        </button>
+        <button class="player-btn" id="play-btn" title="پخش">
+            <svg id="play-icon" width="34" height="34" viewBox="0 0 34 34"><polygon points="10,7 28,17 10,27" fill="#4A2A70"/></svg>
+            <svg id="pause-icon" style="display:none" width="34" height="34" viewBox="0 0 34 34">
+                <rect x="10" y="7" width="5" height="20" fill="#4A2A70"/>
+                <rect x="19" y="7" width="5" height="20" fill="#4A2A70"/>
+            </svg>
+        </button>
+        <button class="player-btn" id="next-btn" title="بعدی" disabled>
+            <svg width="34" height="34" viewBox="0 0 34 34"><polygon points="9,7 21,17 9,27" fill="#4A2A70"/><rect x="23" y="7" width="3" height="20" fill="#4A2A70"/></svg>
+        </button>
+    </div>
+</div>
+
+<div class="player-actions-row">
+    <button class="player-btn" id="share-btn" title="اشتراک‌گذاری">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M18 8.59V7a5 5 0 10-10 0v1.59" stroke="#4A2A70" stroke-width="2" stroke-linecap="round"/>
+            <path d="M12 12v7" stroke="#4A2A70" stroke-width="2" stroke-linecap="round"/>
+            <path d="M8 16l4 4 4-4" stroke="#4A2A70" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+    </button>
+    <button class="player-btn" id="download-btn" title="دانلود">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M12 4v12m0 0l4-4m-4 4l-4-4" stroke="#4A2A70" stroke-width="2" stroke-linecap="round"/>
+            <rect x="4" y="20" width="16" height="2" rx="1" fill="#4A2A70"/>
+        </svg>
+    </button>
+</div>
+
+<div class="footer-player">
+    <span class="footer-text">دافی رو در اینستاگرام دنبال کنین</span>
+    <a href="#" class="btn-instagram">
+        <img src="{{ asset('assets/images/instagram.png') }}" class="footer-icon" alt="Instagram">
+        دنبال کردن
+    </a>
+</div>
+
+<script>
+$(document).ready(function() {
+    const audio = document.getElementById('audio-player');
+    const playBtn = document.getElementById('play-btn');
+    const playIcon = document.getElementById('play-icon');
+    const pauseIcon = document.getElementById('pause-icon');
+    const currentTimeSpan = document.getElementById('current-time');
+    const durationSpan = document.getElementById('total-duration');
+    const progressBar = document.getElementById('progress-bar');
+    const progressBarFilled = document.getElementById('progress-bar-filled');
+    const progressKnob = document.getElementById('progress-knob');
+    const downloadBtn = document.getElementById('download-btn');
+    const shareBtn = document.getElementById('share-btn');
+
+    function formatTime(secs) {
+        if (isNaN(secs)) return "00:00";
+        const m = Math.floor(secs / 60);
+        const s = Math.floor(secs % 60);
+        return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+    }
+
+    // Play/Pause
+    playBtn.onclick = function() {
+        if (audio.paused) {
+            audio.play();
+        } else {
+            audio.pause();
+        }
+    };
+    
+    audio.onplay = function() {
+        playIcon.style.display = "none";
+        pauseIcon.style.display = "inline";
+    };
+    
+    audio.onpause = function() {
+        playIcon.style.display = "inline";
+        pauseIcon.style.display = "none";
+    };
+    
+    // Time update
+    audio.ontimeupdate = function() {
+        currentTimeSpan.textContent = formatTime(audio.currentTime);
+        const percent = audio.duration ? (audio.currentTime / audio.duration) : 0;
+        progressBarFilled.style.width = (percent * 100) + "%";
+        progressKnob.style.left = (percent * 100) + "%";
+    };
+    
+    // Duration
+    audio.onloadedmetadata = function() {
+        durationSpan.textContent = formatTime(audio.duration);
+        audio.ontimeupdate();
+    };
+    
+    // Click on progress bar
+    progressBar.onclick = function(e) {
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const percent = x / rect.width;
+        audio.currentTime = percent * audio.duration;
+    };
+    
+    // Dragging the knob
+    let dragging = false;
+    progressKnob.onmousedown = function(e) {
+        dragging = true;
+        document.body.style.userSelect = "none";
+    };
+    
+    document.addEventListener('mousemove', function(e) {
+        if (!dragging) return;
+        const rect = progressBar.getBoundingClientRect();
+        let x = e.clientX - rect.left;
+        x = Math.max(0, Math.min(x, rect.width));
+        const percent = x / rect.width;
+        audio.currentTime = percent * audio.duration;
+    });
+    
+    document.addEventListener('mouseup', function() {
+        dragging = false;
+        document.body.style.userSelect = "";
+    });
+    
+    // Download
+    downloadBtn.onclick = function() {
+        window.open(audio.src, '_blank');
+    };
+    
+    // Share
+    shareBtn.onclick = function() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'آلبوم ایسمو متن ساختگی',
+                text: 'همین حالا پلی کن!',
+                url: window.location.href
+            });
+        } else {
+            alert('مرورگر شما از اشتراک‌گذاری پشتیبانی نمی‌کند.');
+        }
+    };
+});
+</script>
