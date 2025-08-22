@@ -55,6 +55,72 @@ h2 {
     font-family: inherit;
 }
 
+#otp-input{
+    text-align: center !important;
+    font-size: 20px;
+    font-weight: normal;
+}
+
+.checkbox-container {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    margin: 20px 0 0 0;
+    direction: rtl;
+}
+
+.checkbox-container input[type="checkbox"] {
+    display: none;
+}
+
+.checkbox-container label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-family: inherit;
+    position: relative;
+}
+
+.custom-checkbox {
+    width: 17px;
+    height: 16px;
+    border: 2px solid #4A2A70;
+    border-radius: 25%;
+    background: #fff;
+    box-shadow: 0 4px 18px #a38dcf55;
+    display: inline-block;
+    position: relative;
+    margin-left: 10px;
+    flex-shrink: 0;
+}
+
+.checkbox-label-text {
+    color: #4A2A70;
+    text-shadow: 0 3px 10px #4A2A70, 0 0px 0px #bca5e2;
+    line-height: 1;
+}
+
+/* Tick mark - hidden by default */
+.custom-checkbox::after {
+    content: '';
+    position: absolute;
+    display: none;
+}
+
+/* Show the tick when checked */
+.checkbox-container input[type="checkbox"]:checked + label .custom-checkbox::after {
+    display: block;
+    left: 0px;
+    top: -1px;
+    width: 22px;
+    height: 8px;
+    border-left: 3px solid #B61146;
+    border-bottom: 3px solid #B61146;
+    border-radius: 2px;
+    transform: rotate(-45deg);
+    pointer-events: none;
+}
+
 .steps-info { margin-top: 37px; text-align: right; font-size: 12px; }
 .steps { text-align: right; margin: 10px 0; }
 .step { background: #F2F3F7; padding: 12px; border-radius: 50px; margin-bottom: 12px; font-size: 14px; }
@@ -96,7 +162,17 @@ h2 {
 .footer-player .footer-icon { margin-right: 7px; width: 21px; height: 21px; }
 .footer-player .footer-text { font-size: 13px; margin-left: 12px; }
 .footer-player .footer-follow { background: none; border: none; color: #B61146; font-size: 14px; font-weight: 700; cursor: pointer; padding: 0 10px; }
-
+.player-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #4A2A70;
+    margin-bottom: 8px;
+}
+.player-desc {
+    font-size: 13px;
+    color: #23163f;
+    margin-bottom: 18px;
+}
 /* Coupon visibility helpers */
 .pay-box { display: none; }
 .show { display: block; }

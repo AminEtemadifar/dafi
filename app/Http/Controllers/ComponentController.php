@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\submit;
+use App\Models\Submit;
 use App\RequestStatusEnum;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use App\Models\User;
+use App\Notifications\SendOtpNotification;
+use Illuminate\Support\Carbon;
 
 class ComponentController extends Controller
 {
@@ -35,7 +36,7 @@ class ComponentController extends Controller
         ]);
 
         try {
-            $user = Submit::updateOrCreate(
+            $submit = Submit::updateOrCreate(
                 ['mobile' => $request->mobile],
                 [
                     'name' => $request->fullname,
@@ -43,10 +44,18 @@ class ComponentController extends Controller
                 ]
             );
 
+            // Generate OTP and expiry (e.g., 5 minutes)
+            $otp = (string) random_int(1000, 9999);
+            $submit->otp_code = $otp;
+            $submit->otp_expires_at = now()->addMinutes(5);
+            $submit->save();
+
+            // Send SMS via notification channel
+            //$submit->notify(new SendOtpNotification($submit->mobile, $otp));
 
             return response()->json([
                 'success' => true,
-                'message' => 'اطلاعات با موفقیت ثبت شد'
+                'message' => 'اطلاعات با موفقیت ثبت شد و کد تایید ارسال شد'
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -65,11 +74,22 @@ class ComponentController extends Controller
             'otp' => 'required|string|size:4'
         ]);
 
-        $otp = $request->input('otp');
+        $otp = $request->string('otp');
 
+        $submit = Submit::where('otp_code', $otp)
+            ->whereNotNull('otp_code')
+            ->where(function ($q) {
+                $q->whereNull('otp_expires_at')->orWhere('otp_expires_at', '>=', now());
+            })
+            ->latest('id')
+            ->first();
 
-        if (is_numeric($otp)) {
-            // Mark user as verified in session
+        if ($submit) {
+            $submit->mobile_verified_at = now();
+            // Invalidate OTP after successful verification
+            $submit->otp_code = null;
+            $submit->otp_expires_at = null;
+            $submit->save();
 
             return response()->json([
                 'success' => true,
@@ -79,7 +99,7 @@ class ComponentController extends Controller
 
         return response()->json([
             'success' => false,
-            'message' => 'کد تایید نامعتبر است'
+            'message' => 'کد تایید نامعتبر است یا منقضی شده'
         ]);
     }
 
@@ -94,12 +114,7 @@ class ComponentController extends Controller
 
         $coupon = $request->input('coupon');
 
-        // Here you would typically verify coupon against database
-        // For demo purposes, accept any non-empty coupon
-
-        // Mark coupon as verified in session
-        session(['coupon_verified' => true]);
-
+        // For demo purposes return success without sessions
         return response()->json([
             'success' => true,
             'message' => 'کد تخفیف معتبر است'

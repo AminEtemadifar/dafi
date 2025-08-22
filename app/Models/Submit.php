@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class Submit extends Model
 {
+    use Notifiable;
     /**
      * The attributes that are mass assignable.
      *
@@ -16,5 +18,12 @@ class Submit extends Model
         'name',
         'mobile',
         'mobile_verified_at',
+        'otp_code',
+        'otp_expires_at',
     ];
+
+    public function routeNotificationForPayamakYab(): ?string
+    {
+        return $this->mobile;
+    }
 }

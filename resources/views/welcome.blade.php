@@ -22,11 +22,11 @@
             <div class="step">
                 <label>وارد کردن کد تایید و کد تخفیف</label>
                 <span>کدت تایید رو وارد کن و اگه کد تخفیفم داری فرصت خوبی برای استفادست.</span>
-            </div>
+                </div>
             <div class="step">
                 <label>و گوش کن!</label>
                 <span>موسیـقـی مخصـوص تو، با الگـوریتمی از چهره، حال و هوات و انتخاباتت ساخته شده!</span>
-            </div>
+                </div>
         </div>
 
         @include('components.footer')
