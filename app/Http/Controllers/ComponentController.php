@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\submit;
+use App\RequestStatusEnum;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Models\User;
@@ -33,11 +35,11 @@ class ComponentController extends Controller
         ]);
 
         try {
-            // Create or update user
             $user = Submit::updateOrCreate(
                 ['mobile' => $request->mobile],
                 [
                     'name' => $request->fullname,
+                    'request_status' => RequestStatusEnum::PREPARE->value,
                 ]
             );
 
@@ -65,11 +67,9 @@ class ComponentController extends Controller
 
         $otp = $request->input('otp');
 
-        // Here you would typically verify OTP against database
-        // For demo purposes, accept any 4-digit code
+
         if (is_numeric($otp)) {
             // Mark user as verified in session
-            session(['otp_verified' => true]);
 
             return response()->json([
                 'success' => true,
