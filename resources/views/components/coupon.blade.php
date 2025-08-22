@@ -67,7 +67,8 @@ $(document).ready(function() {
             data: formData,
             success: function(response) {
                 if (response.success) {
-                    // Direct transition without success alert
+                    // Pass music path to deliver component via global state
+                    window.__DELIVER_MUSIC_PATH__ = response.music_path || null;
                     loadComponent('deliver');
                 } else {
                     showError(response.message || 'کد تخفیف نامعتبر است');
