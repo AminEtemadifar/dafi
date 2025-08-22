@@ -9,8 +9,8 @@
 </div>
 
 <!-- Custom Audio Player -->
-<div class="audio-player-custom" dir="ltr">
-    <audio id="audio-player" src="{{ asset('assets/Bbal.mp3') }}"></audio>
+<div class="audio-player-custom" dir="ltr" id="player-wrapper" style="display:none">
+    <audio id="audio-player"></audio>
     <div class="progress-row">
         <span class="progress-time" id="current-time">00:00</span>
         <div class="progress-bar-wrap">
@@ -38,6 +38,11 @@
     </div>
 </div>
 
+<div id="submitted-message" class="text-center" style="display:none">
+	<div class="player-title">درخواست شما با موفقیت ثبت شد</div>
+	<div class="player-desc">به محض آماده شدن موزیک، از همینجا در اختیارتون می‌گذاریم.</div>
+</div>
+
 <div class="player-actions-row">
     <button class="player-btn" id="share-btn" title="اشتراک‌گذاری">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -56,9 +61,25 @@
 
 @include('components.footer')
 
+<style>
+    body {
+        background-color: #fff;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        font-family: 'Kalameh', sans-serif;
+        background-image: url({{asset('assets/images/bg.png')}});
+        background-size: cover;
+        background-repeat: repeat;
+        background-position: center;
+    }
+</style>
+
 <script>
 $(document).ready(function() {
     const audio = document.getElementById('audio-player');
+    const playerWrapper = document.getElementById('player-wrapper');
+    const submittedMessage = document.getElementById('submitted-message');
     const playBtn = document.getElementById('play-btn');
     const playIcon = document.getElementById('play-icon');
     const pauseIcon = document.getElementById('pause-icon');
@@ -69,6 +90,16 @@ $(document).ready(function() {
     const progressKnob = document.getElementById('progress-knob');
     const downloadBtn = document.getElementById('download-btn');
     const shareBtn = document.getElementById('share-btn');
+
+    const candidate = window.__DELIVER_MUSIC_PATH__ || null;
+    if (candidate) {
+        audio.src = candidate.match(/^https?:\/\//) ? candidate : (window.location.origin + (candidate.startsWith('/') ? candidate : ('/' + candidate)));
+        playerWrapper.style.display = '';
+        submittedMessage.style.display = 'none';
+    } else {
+        playerWrapper.style.display = 'none';
+        submittedMessage.style.display = '';
+    }
 
     function formatTime(secs) {
         if (isNaN(secs)) return "00:00";
@@ -109,10 +140,10 @@ $(document).ready(function() {
     });
     document.addEventListener('mouseup', function() { dragging = false; document.body.style.userSelect = ""; });
 
-    downloadBtn.onclick = function() { window.open(audio.src, '_blank'); };
+    downloadBtn.onclick = function() { if (audio.src) { window.open(audio.src, '_blank'); } };
     shareBtn.onclick = function() {
         if (navigator.share) {
-            navigator.share({ title: 'آلبوم ایسمو متن ساختگی', text: 'همین حالا پلی کن!', url: window.location.href });
+            navigator.share({ title: 'موزیک شما آماده است', text: 'همین حالا پلی کن!', url: window.location.href });
         } else { alert('مرورگر شما از اشتراک‌گذاری پشتیبانی نمی‌کند.'); }
     };
 });
