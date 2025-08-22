@@ -1,6 +1,12 @@
-<div class="player-title">همین حالا پلی کن!</div>
-<div class="player-desc">
-    میتونی دانلودش کنی! یا دوستات رو با اشتراک گذاری با همینجا گوش بدی
+<div id="has-path" class="text-center">
+    <div class="player-title">همین حالا پلی کن!</div>
+    <div class="player-desc">
+        میتونی دانلودش کنی! یا دوستات رو با اشتراک گذاری با همینجا گوش بدی
+    </div>
+</div>
+<div id="has-not-path" class="text-center" style="display:none">
+    <div class="player-title">درخواست شما با موفقیت ثبت شد</div>
+    <div class="player-desc">به محض آماده شدن موزیک، لینکشو برات پیامک میکنیم.</div>
 </div>
 
 <!-- Banner with overlay text -->
@@ -23,27 +29,31 @@
     </div>
     <div class="player-controls-row">
         <button class="player-btn" id="prev-btn" title="قبلی" disabled>
-            <svg width="34" height="34" viewBox="0 0 34 34"><polygon points="25,7 13,17 25,27" fill="#4A2A70"/><rect x="8" y="7" width="3" height="20" fill="#4A2A70"/></svg>
+            <svg width="34" height="34" viewBox="0 0 34 34">
+                <polygon points="25,7 13,17 25,27" fill="#4A2A70"/>
+                <rect x="8" y="7" width="3" height="20" fill="#4A2A70"/>
+            </svg>
         </button>
         <button class="player-btn" id="play-btn" title="پخش">
-            <svg id="play-icon" width="34" height="34" viewBox="0 0 34 34"><polygon points="10,7 28,17 10,27" fill="#4A2A70"/></svg>
+            <svg id="play-icon" width="34" height="34" viewBox="0 0 34 34">
+                <polygon points="10,7 28,17 10,27" fill="#4A2A70"/>
+            </svg>
             <svg id="pause-icon" style="display:none" width="34" height="34" viewBox="0 0 34 34">
                 <rect x="10" y="7" width="5" height="20" fill="#4A2A70"/>
                 <rect x="19" y="7" width="5" height="20" fill="#4A2A70"/>
             </svg>
         </button>
         <button class="player-btn" id="next-btn" title="بعدی" disabled>
-            <svg width="34" height="34" viewBox="0 0 34 34"><polygon points="9,7 21,17 9,27" fill="#4A2A70"/><rect x="23" y="7" width="3" height="20" fill="#4A2A70"/></svg>
+            <svg width="34" height="34" viewBox="0 0 34 34">
+                <polygon points="9,7 21,17 9,27" fill="#4A2A70"/>
+                <rect x="23" y="7" width="3" height="20" fill="#4A2A70"/>
+            </svg>
         </button>
     </div>
 </div>
 
-<div id="submitted-message" class="text-center" style="display:none">
-	<div class="player-title">درخواست شما با موفقیت ثبت شد</div>
-	<div class="player-desc">به محض آماده شدن موزیک، از همینجا در اختیارتون می‌گذاریم.</div>
-</div>
 
-<div class="player-actions-row">
+<div class="player-actions-row" id="player-actions-row">
     <button class="player-btn" id="share-btn" title="اشتراک‌گذاری">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
             <path d="M18 8.59V7a5 5 0 10-10 0v1.59" stroke="#4A2A70" stroke-width="2" stroke-linecap="round"/>
@@ -76,75 +86,108 @@
 </style>
 
 <script>
-$(document).ready(function() {
-    const audio = document.getElementById('audio-player');
-    const playerWrapper = document.getElementById('player-wrapper');
-    const submittedMessage = document.getElementById('submitted-message');
-    const playBtn = document.getElementById('play-btn');
-    const playIcon = document.getElementById('play-icon');
-    const pauseIcon = document.getElementById('pause-icon');
-    const currentTimeSpan = document.getElementById('current-time');
-    const durationSpan = document.getElementById('total-duration');
-    const progressBar = document.getElementById('progress-bar');
-    const progressBarFilled = document.getElementById('progress-bar-filled');
-    const progressKnob = document.getElementById('progress-knob');
-    const downloadBtn = document.getElementById('download-btn');
-    const shareBtn = document.getElementById('share-btn');
+    $(document).ready(function () {
+        const audio = document.getElementById('audio-player');
+        const playerWrapper = document.getElementById('player-wrapper');
+        const hasNotPathMessage = document.getElementById('has-not-path');
+        const hasPathMessage = document.getElementById('has-path');
+        const playBtn = document.getElementById('play-btn');
+        const playIcon = document.getElementById('play-icon');
+        const pauseIcon = document.getElementById('pause-icon');
+        const currentTimeSpan = document.getElementById('current-time');
+        const durationSpan = document.getElementById('total-duration');
+        const progressBar = document.getElementById('progress-bar');
+        const progressBarFilled = document.getElementById('progress-bar-filled');
+        const progressKnob = document.getElementById('progress-knob');
+        const downloadBtn = document.getElementById('download-btn');
+        const shareBtn = document.getElementById('share-btn');
+        const playerActionsRow = document.getElementById('player-actions-row');
 
-    const candidate = window.__DELIVER_MUSIC_PATH__ || null;
-    if (candidate) {
-        audio.src = candidate.match(/^https?:\/\//) ? candidate : (window.location.origin + (candidate.startsWith('/') ? candidate : ('/' + candidate)));
-        playerWrapper.style.display = '';
-        submittedMessage.style.display = 'none';
-    } else {
-        playerWrapper.style.display = 'none';
-        submittedMessage.style.display = '';
-    }
+        const candidate = window.__DELIVER_MUSIC_PATH__ || null;
+        if (candidate) {
+            audio.src = candidate.match(/^https?:\/\//) ? candidate : (window.location.origin + (candidate.startsWith('/') ? candidate : ('/' + candidate)));
+            playerWrapper.style.display = '';
+            hasNotPathMessage.style.display = 'none';
+            hasPathMessage.style.display = '';
+            playerActionsRow.style.display = '';
+        } else {
+            playerWrapper.style.display = 'none';
+            hasNotPathMessage.style.display = '';
+            hasPathMessage.style.display = 'none';
+            playerActionsRow.style.display = 'none';
+        }
 
-    function formatTime(secs) {
-        if (isNaN(secs)) return "00:00";
-        const m = Math.floor(secs / 60);
-        const s = Math.floor(secs % 60);
-        return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
-    }
+        function formatTime(secs) {
+            if (isNaN(secs)) return "00:00";
+            const m = Math.floor(secs / 60);
+            const s = Math.floor(secs % 60);
+            return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+        }
 
-    playBtn.onclick = function() {
-        if (audio.paused) { audio.play(); } else { audio.pause(); }
-    };
-    audio.onplay = function() { playIcon.style.display = "none"; pauseIcon.style.display = "inline"; };
-    audio.onpause = function() { playIcon.style.display = "inline"; pauseIcon.style.display = "none"; };
+        playBtn.onclick = function () {
+            if (audio.paused) {
+                audio.play();
+            } else {
+                audio.pause();
+            }
+        };
+        audio.onplay = function () {
+            playIcon.style.display = "none";
+            pauseIcon.style.display = "inline";
+        };
+        audio.onpause = function () {
+            playIcon.style.display = "inline";
+            pauseIcon.style.display = "none";
+        };
 
-    audio.ontimeupdate = function() {
-        currentTimeSpan.textContent = formatTime(audio.currentTime);
-        const percent = audio.duration ? (audio.currentTime / audio.duration) : 0;
-        progressBarFilled.style.width = (percent * 100) + "%";
-        progressKnob.style.left = (percent * 100) + "%";
-    };
+        audio.ontimeupdate = function () {
+            currentTimeSpan.textContent = formatTime(audio.currentTime);
+            const percent = audio.duration ? (audio.currentTime / audio.duration) : 0;
+            progressBarFilled.style.width = (percent * 100) + "%";
+            progressKnob.style.left = (percent * 100) + "%";
+        };
 
-    audio.onloadedmetadata = function() { durationSpan.textContent = formatTime(audio.duration); audio.ontimeupdate(); };
+        audio.onloadedmetadata = function () {
+            durationSpan.textContent = formatTime(audio.duration);
+            audio.ontimeupdate();
+        };
 
-    progressBar.onclick = function(e) {
-        const rect = this.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const percent = x / rect.width;
-        audio.currentTime = percent * audio.duration;
-    };
+        progressBar.onclick = function (e) {
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const percent = x / rect.width;
+            audio.currentTime = percent * audio.duration;
+        };
 
-    let dragging = false;
-    progressKnob.onmousedown = function() { dragging = true; document.body.style.userSelect = "none"; };
-    document.addEventListener('mousemove', function(e) {
-        if (!dragging) return;
-        const rect = progressBar.getBoundingClientRect();
-        let x = e.clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
-        const percent = x / rect.width; audio.currentTime = percent * audio.duration;
+        let dragging = false;
+        progressKnob.onmousedown = function () {
+            dragging = true;
+            document.body.style.userSelect = "none";
+        };
+        document.addEventListener('mousemove', function (e) {
+            if (!dragging) return;
+            const rect = progressBar.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            x = Math.max(0, Math.min(x, rect.width));
+            const percent = x / rect.width;
+            audio.currentTime = percent * audio.duration;
+        });
+        document.addEventListener('mouseup', function () {
+            dragging = false;
+            document.body.style.userSelect = "";
+        });
+
+        downloadBtn.onclick = function () {
+            if (audio.src) {
+                window.open(audio.src, '_blank');
+            }
+        };
+        shareBtn.onclick = function () {
+            if (navigator.share) {
+                navigator.share({title: 'موزیک شما آماده است', text: 'همین حالا پلی کن!', url: window.location.href});
+            } else {
+                alert('مرورگر شما از اشتراک‌گذاری پشتیبانی نمی‌کند.');
+            }
+        };
     });
-    document.addEventListener('mouseup', function() { dragging = false; document.body.style.userSelect = ""; });
-
-    downloadBtn.onclick = function() { if (audio.src) { window.open(audio.src, '_blank'); } };
-    shareBtn.onclick = function() {
-        if (navigator.share) {
-            navigator.share({ title: 'موزیک شما آماده است', text: 'همین حالا پلی کن!', url: window.location.href });
-        } else { alert('مرورگر شما از اشتراک‌گذاری پشتیبانی نمی‌کند.'); }
-    };
-});
 </script>
