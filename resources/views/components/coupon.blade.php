@@ -67,13 +67,18 @@ $(document).ready(function() {
             data: formData,
             success: function(response) {
                 if (response.success) {
+                    // Direct transition without success alert
                     loadComponent('deliver');
                 } else {
-                    alert(response.message || 'کد تخفیف نامعتبر است');
+                    showError(response.message || 'کد تخفیف نامعتبر است');
                 }
             },
-            error: function() {
-                alert('خطا در ارتباط با سرور');
+            error: function(xhr) {
+                let message = 'خطا در ارتباط با سرور';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                showError(message);
             }
         });
     });
