@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Notifications\SendOtpNotification;
 use Illuminate\Support\Carbon;
+use App\Services\MusicServiceInterface;
 
 class ComponentController extends Controller
 {
@@ -44,6 +45,9 @@ class ComponentController extends Controller
                 ]
             );
 
+            // Save to session for later steps
+            session(['user_mobile' => $submit->mobile, 'user_name' => $submit->name]);
+
             // Generate OTP and expiry (e.g., 5 minutes)
             $otp = (string) random_int(1000, 9999);
             $submit->otp_code = $otp;
@@ -76,7 +80,11 @@ class ComponentController extends Controller
 
         $otp = $request->string('otp');
 
-        $submit = Submit::where('otp_code', $otp)
+        $mobile = session('user_mobile');
+        $name = session('user_name');
+
+        $submit = Submit::where('mobile', $mobile)
+            ->where('otp_code', $otp)
             ->whereNotNull('otp_code')
             ->where(function ($q) {
                 $q->whereNull('otp_expires_at')->orWhere('otp_expires_at', '>=', now());
@@ -90,6 +98,9 @@ class ComponentController extends Controller
             $submit->otp_code = null;
             $submit->otp_expires_at = null;
             $submit->save();
+
+            // Keep session values
+            session(['user_mobile' => $submit->mobile, 'user_name' => $submit->name]);
 
             return response()->json([
                 'success' => true,
@@ -106,7 +117,7 @@ class ComponentController extends Controller
     /**
      * Handle coupon verification
      */
-    public function verifyCoupon(Request $request): JsonResponse
+    public function verifyCoupon(Request $request, MusicServiceInterface $musicService): JsonResponse
     {
         $request->validate([
             'coupon' => 'required|string|max:50'
@@ -114,10 +125,25 @@ class ComponentController extends Controller
 
         $coupon = $request->input('coupon');
 
-        // For demo purposes return success without sessions
+        $mobile = session('user_mobile');
+        $name = session('user_name');
+
+        $submit = $mobile ? Submit::where('mobile', $mobile)->latest('id')->first() : null;
+        $musicPath = $name ? $musicService->getMusicPathForName($name) : null;
+
+        if ($submit) {
+            if ($musicPath) {
+                $submit->request_status = RequestStatusEnum::DONE->value;
+            } else {
+                $submit->request_status = RequestStatusEnum::REQUESTED->value;
+            }
+            $submit->save();
+        }
+
         return response()->json([
             'success' => true,
-            'message' => 'کد تخفیف معتبر است'
+            'message' => $musicPath ? 'کد تخفیف معتبر است' : 'کد تخفیف معتبر است، نتیجه به‌زودی آماده می‌شود',
+            'music_path' => $musicPath,
         ]);
     }
 }
