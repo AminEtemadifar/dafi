@@ -54,13 +54,7 @@
     </button>
 </div>
 
-<div class="footer-player">
-    <span class="footer-text">دافی رو در اینستاگرام دنبال کنین</span>
-    <a href="#" class="btn-instagram">
-        <img src="{{ asset('assets/images/instagram.png') }}" class="footer-icon" alt="Instagram">
-        دنبال کردن
-    </a>
-</div>
+@include('components.footer')
 
 <script>
 $(document).ready(function() {
@@ -83,84 +77,43 @@ $(document).ready(function() {
         return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
     }
 
-    // Play/Pause
     playBtn.onclick = function() {
-        if (audio.paused) {
-            audio.play();
-        } else {
-            audio.pause();
-        }
+        if (audio.paused) { audio.play(); } else { audio.pause(); }
     };
-    
-    audio.onplay = function() {
-        playIcon.style.display = "none";
-        pauseIcon.style.display = "inline";
-    };
-    
-    audio.onpause = function() {
-        playIcon.style.display = "inline";
-        pauseIcon.style.display = "none";
-    };
-    
-    // Time update
+    audio.onplay = function() { playIcon.style.display = "none"; pauseIcon.style.display = "inline"; };
+    audio.onpause = function() { playIcon.style.display = "inline"; pauseIcon.style.display = "none"; };
+
     audio.ontimeupdate = function() {
         currentTimeSpan.textContent = formatTime(audio.currentTime);
         const percent = audio.duration ? (audio.currentTime / audio.duration) : 0;
         progressBarFilled.style.width = (percent * 100) + "%";
         progressKnob.style.left = (percent * 100) + "%";
     };
-    
-    // Duration
-    audio.onloadedmetadata = function() {
-        durationSpan.textContent = formatTime(audio.duration);
-        audio.ontimeupdate();
-    };
-    
-    // Click on progress bar
+
+    audio.onloadedmetadata = function() { durationSpan.textContent = formatTime(audio.duration); audio.ontimeupdate(); };
+
     progressBar.onclick = function(e) {
         const rect = this.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const percent = x / rect.width;
         audio.currentTime = percent * audio.duration;
     };
-    
-    // Dragging the knob
+
     let dragging = false;
-    progressKnob.onmousedown = function(e) {
-        dragging = true;
-        document.body.style.userSelect = "none";
-    };
-    
+    progressKnob.onmousedown = function() { dragging = true; document.body.style.userSelect = "none"; };
     document.addEventListener('mousemove', function(e) {
         if (!dragging) return;
         const rect = progressBar.getBoundingClientRect();
-        let x = e.clientX - rect.left;
-        x = Math.max(0, Math.min(x, rect.width));
-        const percent = x / rect.width;
-        audio.currentTime = percent * audio.duration;
+        let x = e.clientX - rect.left; x = Math.max(0, Math.min(x, rect.width));
+        const percent = x / rect.width; audio.currentTime = percent * audio.duration;
     });
-    
-    document.addEventListener('mouseup', function() {
-        dragging = false;
-        document.body.style.userSelect = "";
-    });
-    
-    // Download
-    downloadBtn.onclick = function() {
-        window.open(audio.src, '_blank');
-    };
-    
-    // Share
+    document.addEventListener('mouseup', function() { dragging = false; document.body.style.userSelect = ""; });
+
+    downloadBtn.onclick = function() { window.open(audio.src, '_blank'); };
     shareBtn.onclick = function() {
         if (navigator.share) {
-            navigator.share({
-                title: 'آلبوم ایسمو متن ساختگی',
-                text: 'همین حالا پلی کن!',
-                url: window.location.href
-            });
-        } else {
-            alert('مرورگر شما از اشتراک‌گذاری پشتیبانی نمی‌کند.');
-        }
+            navigator.share({ title: 'آلبوم ایسمو متن ساختگی', text: 'همین حالا پلی کن!', url: window.location.href });
+        } else { alert('مرورگر شما از اشتراک‌گذاری پشتیبانی نمی‌کند.'); }
     };
 });
 </script>

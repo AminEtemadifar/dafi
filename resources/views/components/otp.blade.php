@@ -12,24 +12,15 @@
     </div>
 </form>
 
-<!-- Footer -->
-<div class="footer">
-    <img src="{{ asset('assets/images/instagram.png') }}" alt="" >
-    <span class="btn-instagram">دافی رو در اینستاگرام دنبال کنین</span>
-    <img src="{{ asset('assets/images/Arrow-right.png') }}" style="padding-right: 7px" alt="" >
-    <a href="#" class="btn-instagram">دنبال کردن</a>
-</div>
+@include('components.footer')
 
 <script>
 $(document).ready(function() {
-    // Auto-focus on OTP input
     $('#otp-input').focus();
 
-    // Auto-advance to next input (if we had multiple inputs)
     $('#otp-input').on('input', function() {
         var value = $(this).val();
         if (value.length === 4) {
-            // Auto-submit when 4 digits are entered
             $('#otpForm').submit();
         }
     });
