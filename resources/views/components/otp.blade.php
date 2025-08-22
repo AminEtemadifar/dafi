@@ -4,8 +4,8 @@
 <form id="otpForm">
     <div>
         <div class="form-group">
-            <label for="otp">کد ارسال شده به شماره <span id="mobileNumber">09012959494</span> را وارد کنید</label>
-            <input type="text" id="otp" name="otp" class="input-field" placeholder="- - - -" maxlength="4" required>
+            <label for="otp-input">کد ارسال شده به شماره <span id="mobileNumber">09012959494</span> را وارد کنید</label>
+            <input type="text" id="otp-input" name="otp" class="input-field" placeholder="- - - -" maxlength="4" required>
         </div>
         <button type="submit" class="btn-primary">تایید</button>
         <button type="button" onclick="showComponent('information')" class="btn-secondary">بازگشت به مرحله قبل</button>
@@ -23,24 +23,24 @@
 <script>
 $(document).ready(function() {
     // Auto-focus on OTP input
-    $('#otp').focus();
-    
+    $('#otp-input').focus();
+
     // Auto-advance to next input (if we had multiple inputs)
-    $('#otp').on('input', function() {
+    $('#otp-input').on('input', function() {
         var value = $(this).val();
         if (value.length === 4) {
             // Auto-submit when 4 digits are entered
             $('#otpForm').submit();
         }
     });
-    
+
     $('#otpForm').on('submit', function(e) {
         e.preventDefault();
-        
+
         var formData = {
-            otp: $('#otp').val()
+            otp: $('#otp-input').val()
         };
-        
+
         $.ajax({
             url: '/api/verify-otp',
             method: 'POST',

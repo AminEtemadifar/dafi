@@ -5,8 +5,8 @@
     <form id="couponForm">
         <div>
             <div class="form-group">
-                <label for="coupon">کد تخفیف خودت رو وارد کن و بدون هزینه موزیکتو تحویل بگیر</label>
-                <input type="text" id="coupon" name="coupon" class="input-field" placeholder="کد تخفیف">
+                <label for="coupon-input">کد تخفیف خودت رو وارد کن و بدون هزینه موزیکتو تحویل بگیر</label>
+                <input type="text" id="coupon-input" name="coupon" class="input-field" placeholder="کد تخفیف">
             </div>
             <button type="submit" class="btn-primary">تایید</button>
             <button type="button" onclick="showComponent('otp')" class="btn-secondary">بازگشت به مرحله قبل</button>
@@ -64,14 +64,14 @@ $(document).ready(function() {
 
     // Add event listener
     checkbox.addEventListener('change', updateUI);
-    
+
     $('#couponForm').on('submit', function(e) {
         e.preventDefault();
-        
+
         var formData = {
-            coupon: $('#coupon').val()
+            coupon: $('#coupon-input').val()
         };
-        
+
         $.ajax({
             url: '/api/verify-coupon',
             method: 'POST',
