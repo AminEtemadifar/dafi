@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ComponentController;
+use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\AdminDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,3 +27,15 @@ Route::get('/component/{component}', [ComponentController::class, 'load']);
 Route::post('/api/information', [ComponentController::class, 'storeInformation']);
 Route::post('/api/verify-otp', [ComponentController::class, 'verifyOtp']);
 Route::post('/api/verify-coupon', [ComponentController::class, 'verifyCoupon']);
+
+// Admin auth
+Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])->name('admin.login');
+Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('admin.login.attempt');
+Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+
+// Admin dashboard & actions
+Route::middleware('auth')->prefix('admin')->group(function () {
+    Route::get('/', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/submits/by-name', [AdminDashboardController::class, 'fetchPendingByName'])->name('admin.submits.byName');
+    Route::post('/names', [AdminDashboardController::class, 'storeNameAndProcess'])->name('admin.names.store');
+});
