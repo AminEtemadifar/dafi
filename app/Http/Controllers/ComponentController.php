@@ -14,11 +14,11 @@ class ComponentController extends Controller
     public function load($component): \Illuminate\View\View
     {
         $validComponents = ['information', 'otp', 'coupon', 'deliver'];
-        
+
         if (!in_array($component, $validComponents)) {
             abort(404);
         }
-        
+
         return view('components.' . $component);
     }
 
@@ -34,18 +34,14 @@ class ComponentController extends Controller
 
         try {
             // Create or update user
-            $user = User::updateOrCreate(
+            $user = Submit::updateOrCreate(
                 ['mobile' => $request->mobile],
                 [
-                    'fullname' => $request->fullname,
-                    'mobile' => $request->mobile,
-                    'name' => $request->fullname // Use fullname as name for now
+                    'name' => $request->fullname,
                 ]
             );
 
-            // Store user ID in session for later use
-            session(['user_id' => $user->id]);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'اطلاعات با موفقیت ثبت شد'
@@ -68,19 +64,19 @@ class ComponentController extends Controller
         ]);
 
         $otp = $request->input('otp');
-        
+
         // Here you would typically verify OTP against database
         // For demo purposes, accept any 4-digit code
         if (is_numeric($otp)) {
             // Mark user as verified in session
             session(['otp_verified' => true]);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'کد تایید صحیح است'
             ]);
         }
-        
+
         return response()->json([
             'success' => false,
             'message' => 'کد تایید نامعتبر است'
@@ -97,13 +93,13 @@ class ComponentController extends Controller
         ]);
 
         $coupon = $request->input('coupon');
-        
+
         // Here you would typically verify coupon against database
         // For demo purposes, accept any non-empty coupon
-        
+
         // Mark coupon as verified in session
         session(['coupon_verified' => true]);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'کد تخفیف معتبر است'
