@@ -1,13 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
 <div class="card" style="margin:16px 0;">
 	<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
 		<h2 class="title">داشبورد مدیریت</h2>
-		<form method="POST" action="{{ route('admin.logout') }}">
-			@csrf
-			<button type="submit" class="btn-secondary">خروج</button>
-		</form>
 	</div>
 	@if (session('status'))
 		<div class="alert alert-success" role="alert" style="margin-top:12px;">{{ session('status') }}</div>
@@ -76,8 +72,11 @@
 			</div>
 			<div class="form-group">
 				<label for="music">فایل موسیقی</label>
-				<input type="file" id="music" name="music" class="input-field" accept="audio/*" required>
-				<small>فرمت‌های مجاز: mp3, wav, ogg — حداکثر ۱۰ مگابایت</small>
+				<div class="dropzone">
+					<div class="label">فایل را اینجا رها کنید یا کلیک کنید</div>
+					<div class="hint">mp3, wav, ogg — حداکثر ۱۰ مگابایت</div>
+					<input type="file" id="music" name="music" accept="audio/*" required>
+				</div>
 			</div>
 			<div class="form-group">
 				<label>درخواست‌های مطابق (انتخابی)</label>
