@@ -21,7 +21,10 @@
         <label>پرداخت رو انجام بده یا با به کد تخفیف موزيكتو بدون هزینه تحویل بگیر.</label>
         <div class="price">۱۰۰.۰۰۰ ریال</div>
     </div>
-    <button onclick="loadComponent('deliver')" class="btn-primary">پرداخت</button>
+    <form id="paymentStartForm" method="POST" action="/payment/start" style="display:inline;">
+        @csrf
+        <button type="submit" class="btn-primary">پرداخت</button>
+    </form>
     <button onclick="showComponent('otp')" class="btn-secondary">بازگشت به مرحله قبل</button>
 </div>
 
