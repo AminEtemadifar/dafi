@@ -8,11 +8,16 @@
 	<link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 	<title>پنل مدیریت</title>
 </head>
-<body>
+<body class="theme-light">
 	<div class="admin-wrapper">
 		<header class="admin-header">
 			<div class="brand">پنل مدیریت</div>
 			<nav class="nav-actions">
+				<a class="btn-ghost" href="{{ route('admin.dashboard') }}">داشبورد</a>
+				<a class="btn-ghost" href="{{ route('admin.transactions') }}">تراکنش‌ها</a>
+				<a class="btn-ghost" href="{{ route('admin.names.index') }}">نام‌ها</a>
+				<a class="btn-ghost" href="{{ route('admin.submits.index') }}">درخواست‌ها</a>
+				<button type="button" id="themeToggle" class="btn-secondary" title="تغییر تم">🌓</button>
 				@auth
 					<form method="POST" action="{{ route('admin.logout') }}">
 						@csrf
@@ -27,6 +32,23 @@
 	</div>
 
 	<script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
+	<script>
+	(function(){
+		var key = 'admin_theme';
+		function applyTheme(t){
+			document.body.classList.remove('theme-light','theme-dark');
+			document.body.classList.add(t);
+		}
+		var saved = localStorage.getItem(key) || 'theme-light';
+		applyTheme(saved);
+		document.getElementById('themeToggle').addEventListener('click', function(){
+			var cur = document.body.classList.contains('theme-dark') ? 'theme-dark' : 'theme-light';
+			var next = cur === 'theme-dark' ? 'theme-light' : 'theme-dark';
+			localStorage.setItem(key, next);
+			applyTheme(next);
+		});
+	})();
+	</script>
 	@stack('scripts')
 </body>
 </html>

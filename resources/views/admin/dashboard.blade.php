@@ -72,15 +72,19 @@
 			</div>
 			<div class="form-group">
 				<label for="music">فایل موسیقی</label>
-				<div class="dropzone">
+				<div class="dropzone" id="dropzone">
 					<div class="label">فایل را اینجا رها کنید یا کلیک کنید</div>
 					<div class="hint">mp3, wav, ogg — حداکثر ۱۰ مگابایت</div>
 					<input type="file" id="music" name="music" accept="audio/*" required>
+					<div class="filename" id="filename">فایلی انتخاب نشده است</div>
 				</div>
 			</div>
 			<div class="form-group">
 				<label>درخواست‌های مطابق (انتخابی)</label>
-				<div id="matches" class="list" style="max-height:220px;overflow:auto;border:1px solid #eee;border-radius:8px;padding:8px;"></div>
+				<div class="selectlike" id="matchesSelect">
+					<div class="select-display"><span>انتخاب درخواست‌ها</span><span>▾</span></div>
+					<div class="options" id="matches"></div>
+				</div>
 				<small>پس از وارد کردن نام، لیست درخواست‌های مطابق نمایش داده می‌شود.</small>
 			</div>
 		</div>
@@ -90,32 +94,45 @@
 
 <script>
 $(function(){
+	// filename display
+	$('#music').on('change', function(){
+		var f = this.files && this.files[0] ? this.files[0].name : 'فایلی انتخاب نشده است';
+		$('#filename').text(f);
+	});
+
+	// dropdown open/close
+	$('#matchesSelect .select-display').on('click', function(){
+		$('#matchesSelect').toggleClass('open');
+	});
+	$(document).on('click', function(e){
+		if(!$(e.target).closest('#matchesSelect').length){ $('#matchesSelect').removeClass('open'); }
+	});
+
 	var fetchTimer = null;
 	$('#name').on('input', function(){
 		clearTimeout(fetchTimer);
 		var name = $(this).val().trim();
-		if (name.length === 0) {
-			$('#matches').html('<div style="color:#888;">—</div>');
-			return;
-		}
+		$('#matches').empty();
+		if (name.length === 0) { return; }
 		fetchTimer = setTimeout(function(){
 			$.get("{{ route('admin.submits.byName') }}", { name: name })
 				.done(function(resp){
 					var items = resp.items || [];
 					if (items.length === 0) {
-						$('#matches').html('<div style="color:#888;">موردی یافت نشد</div>');
+						$('#matches').html('<div class="option" style="color:#888;">موردی یافت نشد</div>');
 						return;
 					}
 					var html = items.map(function(it){
-						return '<label style="display:flex;align-items:center;gap:8px;margin:4px 0;">'
-							+ '<input type="checkbox" name="submits[]" value="'+it.id+'">'
+						var id = 'submit_'+it.id;
+						return '<label class="option" for="'+id+'">'
+							+ '<input type="checkbox" id="'+id+'" name="submits[]" value="'+it.id+'">'
 							+ '<span style="direction:ltr;">'+it.mobile+'</span>'
 							+ '<span style="color:#666;">('+it.name+')</span>'
 							+ '</label>';
 					}).join('');
 					$('#matches').html(html);
 				})
-				.fail(function(){ showError('خطا در دریافت درخواست‌های مطابق'); });
+				.fail(function(){ alert('خطا در دریافت درخواست‌های مطابق'); });
 		}, 500);
 	});
 });

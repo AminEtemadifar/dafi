@@ -44,4 +44,9 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/transactions', [\App\Http\Controllers\AdminTransactionController::class, 'index'])->name('admin.transactions');
     Route::get('/submits/by-name', [AdminDashboardController::class, 'fetchPendingByName'])->name('admin.submits.byName');
     Route::post('/names', [AdminDashboardController::class, 'storeNameAndProcess'])->name('admin.names.store');
+    // Names management
+    Route::get('/names', [\App\Http\Controllers\AdminNameController::class, 'index'])->name('admin.names.index');
+    Route::get('/names/create', [\App\Http\Controllers\AdminNameController::class, 'create'])->name('admin.names.create');
+    Route::post('/names/simple', [\App\Http\Controllers\AdminNameController::class, 'store'])->name('admin.names.store.simple');
+    Route::get('/submits', [\App\Http\Controllers\AdminSubmitController::class, 'index'])->name('admin.submits.index');
 });
