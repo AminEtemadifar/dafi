@@ -1,8 +1,8 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="card" style="max-width:480px;margin:40px auto;">
-	<h2 class="title text-center">ورود مدیر</h2>
+<div class="card" style="max-width:420px;margin:56px auto;padding:24px;">
+	<h2 class="title text-center" style="margin-bottom:16px;">ورود مدیر</h2>
 	@if ($errors->any())
 		<div class="alert alert-error" role="alert" style="margin-bottom:12px;">
 			{{ $errors->first() }}

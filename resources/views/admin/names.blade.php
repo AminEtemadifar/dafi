@@ -3,7 +3,7 @@
 @section('content')
 <div class="card" style="margin:16px 0;">
 	<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
-		<h2 class="title">داشبورد مدیریت</h2>
+		<h2 class="title">مدیریت نام‌ها</h2>
 	</div>
 	@if (session('status'))
 		<div class="alert alert-success" role="alert" style="margin-top:12px;">{{ session('status') }}</div>
@@ -13,55 +13,26 @@
 	@endif
 </div>
 
-<div class="grid" style="grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:12px;">
-	<div class="card info-card">
-		<div class="info-title">پراستفاده‌ترین نام</div>
-		<div class="info-value">{{ $mostUsedName?->name ?? '—' }}</div>
-		<div class="info-sub">تعداد استفاده: {{ number_format($mostUsedName?->use_count ?? 0) }}</div>
-	</div>
-	<div class="card info-card">
-		<div class="info-title">پرداخت‌های موفق</div>
-		<div class="info-value">{{ number_format($paymentsSuccessCount) }}</div>
-		<div class="info-sub">جمع مبالغ: {{ number_format($paymentsSuccessSum) }} ریال</div>
-	</div>
-	<div class="card info-card">
-		<div class="info-title">درخواست‌ها (در انتظار)</div>
-		<div class="info-value">{{ number_format($requestedCount) }}</div>
-	</div>
-	<div class="card info-card">
-		<div class="info-title">درخواست‌ها (انجام شده)</div>
-		<div class="info-value">{{ number_format($doneCount) }}</div>
-	</div>
-</div>
-
-<div class="card" style="margin-top:16px;">
-	<h3 class="subtitle">آخرین درخواست‌های در وضعیت «درخواست شده» (۱۰ مورد)</h3>
-	<div class="table">
-		<div class="table-row table-header"><div>شماره موبایل</div><div>نام</div></div>
-		@forelse($pendingSubmits as $s)
-			<div class="table-row"><div>{{ $s->mobile }}</div><div>{{ $s->name }}</div></div>
-		@empty
-			<div class="table-row"><div colspan="2">موردی یافت نشد</div></div>
-		@endforelse
-	</div>
-</div>
-
-<div class="card" style="margin-top:16px;">
-	<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
-		<h3 class="subtitle">فهرست نام‌ها</h3>
-		<form method="GET" action="{{ route('admin.dashboard') }}" style="display:flex;gap:8px;align-items:center;">
-			<label for="q" style="white-space:nowrap;">جستجو:</label>
-			<input name="q" id="q" class="input-field" value="{{ $q }}" placeholder="جستجو در نام" />
-			<label for="sort" style="white-space:nowrap;">مرتب‌سازی:</label>
-			<select name="sort" id="sort" class="input-field">
-				<option value="use_count_desc" {{ $sort==='use_count_desc' ? 'selected' : '' }}>بیشترین استفاده</option>
-				<option value="name_asc" {{ $sort==='name_asc' ? 'selected' : '' }}>الفبا (الف تا ی)</option>
-				<option value="name_desc" {{ $sort==='name_desc' ? 'selected' : '' }}>الفبا (ی تا الف)</option>
-				<option value="latest" {{ $sort==='latest' ? 'selected' : '' }}>جدیدترین</option>
+<div class="card">
+	<form method="GET" style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">
+		<div class="form-group" style="min-width:200px;">
+			<label for="q">جستجو</label>
+			<input class="input-field" type="text" id="q" name="q" value="{{ request('q') }}" placeholder="نام ...">
+		</div>
+		<div class="form-group">
+			<label for="sort">مرتب‌سازی</label>
+			<select class="input-field" id="sort" name="sort">
+				<option value="use_count_desc" {{ request('sort','use_count_desc')==='use_count_desc'?'selected':'' }}>بیشترین استفاده</option>
+				<option value="name_asc" {{ request('sort')==='name_asc'?'selected':'' }}>الفبا (الف تا ی)</option>
+				<option value="name_desc" {{ request('sort')==='name_desc'?'selected':'' }}>الفبا (ی تا الف)</option>
+				<option value="latest" {{ request('sort')==='latest'?'selected':'' }}>جدیدترین</option>
 			</select>
-			<button class="btn-secondary" type="submit">اعمال</button>
-		</form>
-	</div>
+		</div>
+		<button class="btn-secondary" type="submit">اعمال</button>
+	</form>
+</div>
+
+<div class="card" style="margin-top:12px;">
 	<div class="table">
 		<div class="table-row table-header"><div>نام</div><div>تعداد استفاده</div><div>مسیر فایل</div></div>
 		@foreach($names as $n)
@@ -101,9 +72,10 @@
 	</form>
 </div>
 
+@push('scripts')
+<script src="{{ asset('admin/js/dropzone.js') }}"></script>
 <script>
 $(function(){
-	// filename display
 	$('#music').on('change', function(){
 		var f = this.files && this.files[0] ? this.files[0].name : 'فایلی انتخاب نشده است';
 		$('#filename').text(f);
@@ -139,4 +111,5 @@ $(function(){
 	});
 });
 </script>
+@endpush
 @endsection
