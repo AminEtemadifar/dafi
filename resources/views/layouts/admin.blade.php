@@ -7,6 +7,8 @@
 	<link rel="stylesheet" href="{{ asset('assets/fonts/Kalameh%204/kalameh-fa.css') }}">
 	<link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 	<title>پنل مدیریت</title>
+	<script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
+
 </head>
 <body>
 	<div class="admin-wrapper">
@@ -26,7 +28,6 @@
 		</main>
 	</div>
 
-	<script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
 	@stack('scripts')
 </body>
 </html>

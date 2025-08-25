@@ -76,6 +76,7 @@
 					<div class="label">فایل را اینجا رها کنید یا کلیک کنید</div>
 					<div class="hint">mp3, wav, ogg — حداکثر ۱۰ مگابایت</div>
 					<input type="file" id="music" name="music" accept="audio/*" required>
+					<div class="filename" id="filename">فایلی انتخاب نشده است</div>
 				</div>
 			</div>
 			<div class="form-group">
@@ -90,6 +91,14 @@
 
 <script>
 $(function(){
+	// filename display
+	$('#music').on('change', function(){
+		var f = this.files && this.files[0] ? this.files[0].name : 'فایلی انتخاب نشده است';
+		$('#filename').text(f);
+	});
+
+
+
 	var fetchTimer = null;
 	$('#name').on('input', function(){
 		clearTimeout(fetchTimer);
