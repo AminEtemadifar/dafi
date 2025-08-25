@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Name;
 use App\Models\Submit;
-use App\Models\Transaction;
-use App\Notifications\SendMusicPathNotification;
 use App\RequestStatusEnum;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
@@ -17,23 +15,10 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 
-class AdminDashboardController extends Controller
+class AdminNameController extends Controller
 {
 	public function index(Request $request): View
 	{
-		$mostUsedName = Name::orderByDesc('use_count')->first();
-		$requestedCount = Submit::where('request_status', RequestStatusEnum::REQUESTED->value)->count();
-		$doneCount = Submit::where('request_status', RequestStatusEnum::DONE->value)->count();
-
-		$paymentsSuccessCount = Transaction::where('status', 'success')->count();
-		$paymentsSuccessSum = (int) Transaction::where('status', 'success')->sum('amount');
-
-		$pendingSubmits = Submit::select(['id','mobile','name'])
-			->where('request_status', RequestStatusEnum::REQUESTED->value)
-			->latest('id')
-			->limit(10)
-			->get();
-
 		$sort = $request->query('sort', 'use_count_desc');
 		$q = trim((string) $request->query('q', ''));
 		$namesQuery = Name::query();
@@ -55,22 +40,11 @@ class AdminDashboardController extends Controller
 				$namesQuery->orderByDesc('use_count');
 		}
 		/** @var LengthAwarePaginator $names */
-		$names = $namesQuery->paginate(10)->withQueryString();
-
-		return view('admin.dashboard', [
-			'mostUsedName' => $mostUsedName,
-			'requestedCount' => $requestedCount,
-			'doneCount' => $doneCount,
-			'paymentsSuccessCount' => $paymentsSuccessCount,
-			'paymentsSuccessSum' => $paymentsSuccessSum,
-			'pendingSubmits' => $pendingSubmits,
-			'names' => $names,
-			'sort' => $sort,
-			'q' => $q,
-		]);
+		$names = $namesQuery->paginate(20)->withQueryString();
+		return view('admin.names', compact('names','sort','q'));
 	}
 
-	public function fetchPendingByName(Request $request): JsonResponse
+	public function autocomplete(Request $request): JsonResponse
 	{
 		$name = trim((string) $request->query('name', ''));
 		if ($name === '') {
@@ -85,7 +59,7 @@ class AdminDashboardController extends Controller
 		return response()->json(['items' => $items]);
 	}
 
-	public function storeNameAndProcess(Request $request): RedirectResponse
+	public function store(Request $request): RedirectResponse
 	{
 		$validator = Validator::make($request->all(), [
 			'name' => ['required','string','max:255'],
@@ -123,21 +97,20 @@ class AdminDashboardController extends Controller
 					->get();
 
 				foreach ($submits as $submit) {
-					$submit->notify(new SendMusicPathNotification($submit->mobile, url($publicPath), $nameText));
+					$submit->notify(new \App\Notifications\SendMusicPathNotification($submit->mobile, url($publicPath), $nameText));
 					$submit->request_status = RequestStatusEnum::DONE->value;
 					$submit->save();
 				}
 
-				// Increment use_count by number processed
 				$nameModel->increment('use_count', $submits->count());
 			}
 
 			DB::commit();
 
-			return redirect()->route('admin.dashboard')->with('status', 'نام و فایل با موفقیت ثبت شد و پیامک‌ها ارسال شدند.');
+			return redirect()->route('admin.names.index')->with('status', 'نام و فایل با موفقیت ثبت شد و پیامک‌ها ارسال شدند.');
 		} catch (\Throwable $e) {
 			DB::rollBack();
-			Log::error('Admin storeNameAndProcess error: '.$e->getMessage());
+			Log::error('AdminNameController store error: '.$e->getMessage());
 			return back()->withErrors(['error' => 'خطایی رخ داد. لطفا دوباره تلاش کنید.'])->withInput();
 		}
 	}

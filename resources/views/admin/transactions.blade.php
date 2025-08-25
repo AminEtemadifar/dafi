@@ -17,6 +17,16 @@
 				@endforeach
 			</select>
 		</div>
+		<div class="form-group" style="min-width:160px;">
+			<label for="sort">مرتب‌سازی</label>
+			<select class="input-field" id="sort" name="sort">
+				<option value="created_desc" {{ request('sort','created_desc')==='created_desc'?'selected':'' }}>جدیدترین</option>
+				<option value="created_asc" {{ request('sort')==='created_asc'?'selected':'' }}>قدیمی‌ترین</option>
+				<option value="amount_desc" {{ request('sort')==='amount_desc'?'selected':'' }}>مبلغ (بیشترین)</option>
+				<option value="amount_asc" {{ request('sort')==='amount_asc'?'selected':'' }}>مبلغ (کمترین)</option>
+				<option value="status" {{ request('sort')==='status'?'selected':'' }}>وضعیت</option>
+			</select>
+		</div>
 		<button class="btn-secondary" type="submit">اعمال فیلتر</button>
 	</form>
 </div>

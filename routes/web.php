@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ComponentController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\AdminSubmitController;
+use App\Http\Controllers\AdminNameController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,7 +32,6 @@ Route::post('/api/verify-otp', [ComponentController::class, 'verifyOtp']);
 Route::post('/api/verify-coupon', [ComponentController::class, 'verifyCoupon']);
 
 // Payments
-use App\Http\Controllers\PaymentController;
 Route::post('/payment/start', [PaymentController::class, 'start'])->name('payment.start');
 Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 
@@ -41,7 +43,21 @@ Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admi
 // Admin dashboard & actions
 Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+
+    // Payments listing
+    Route::get('/payments', [\App\Http\Controllers\AdminTransactionController::class, 'index'])->name('admin.payments');
+
+    // Backward compatible old path
     Route::get('/transactions', [\App\Http\Controllers\AdminTransactionController::class, 'index'])->name('admin.transactions');
+
+    // Names management
+    Route::get('/names', [AdminNameController::class, 'index'])->name('admin.names.index');
+    Route::post('/names', [AdminNameController::class, 'store'])->name('admin.names.store');
+    Route::get('/names/autocomplete', [AdminNameController::class, 'autocomplete'])->name('admin.names.autocomplete');
+
+    // Submits management
+    Route::get('/submits', [AdminSubmitController::class, 'index'])->name('admin.submits');
+
+    // Legacy ajax kept for dashboard during transition
     Route::get('/submits/by-name', [AdminDashboardController::class, 'fetchPendingByName'])->name('admin.submits.byName');
-    Route::post('/names', [AdminDashboardController::class, 'storeNameAndProcess'])->name('admin.names.store');
 });
