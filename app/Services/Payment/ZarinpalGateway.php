@@ -14,7 +14,8 @@ class ZarinpalGateway implements PaymentGatewayInterface
 
 	private function apiBase(): string
 	{
-		return 'https://api.zarinpal.com/pg/v4';
+        $base = $this->sandbox ? 'https://sandbox.zarinpal.com/pg/v4' : 'https://sandbox.zarinpal.com/pg/v4';
+        return $base;
 	}
 
 	private function startPayUrl(string $authority): string
