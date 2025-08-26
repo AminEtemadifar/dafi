@@ -27,6 +27,8 @@
     <!-- Main CSS -->
     <link rel="stylesheet" type="text/css" href="{{ asset('admin-assets/css/app.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('admin-assets/css/style-rtl.alpha6.min.css') }}">
+    <link rel="icon" type="image/png" href="{{  asset('admin-assets/img/logo.png') }}">
+
 </head>
 <body data-col="1-column" class="1-column blank-page blank-page">
     <div class="wrapper">
