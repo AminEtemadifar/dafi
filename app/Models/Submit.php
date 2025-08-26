@@ -22,6 +22,10 @@ class Submit extends Model
         'otp_expires_at',
     ];
 
+    protected $casts = [
+        'mobile_verified_at' => 'datetime',
+    ];
+
     public function routeNotificationForPayamakYab(): ?string
     {
         return $this->mobile;

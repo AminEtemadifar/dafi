@@ -39,9 +39,18 @@ Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('admin.
 Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
 // Admin dashboard & actions
-Route::middleware('auth')->prefix('admin')->group(function () {
-    Route::get('/', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-    Route::get('/transactions', [\App\Http\Controllers\AdminTransactionController::class, 'index'])->name('admin.transactions');
-    Route::get('/submits/by-name', [AdminDashboardController::class, 'fetchPendingByName'])->name('admin.submits.byName');
-    Route::post('/names', [AdminDashboardController::class, 'storeNameAndProcess'])->name('admin.names.store');
+Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Admin\AdminDashboardController::class, 'index'])->name('dashboard');
+
+    // Names management
+    Route::resource('names', \App\Http\Controllers\Admin\AdminNamesController::class);
+    Route::get('/submits/by-name', [\App\Http\Controllers\Admin\AdminNamesController::class, 'getMatchingSubmits'])->name('submits.byName');
+
+    // Submits management
+    Route::resource('submits', \App\Http\Controllers\Admin\AdminSubmitsController::class)->only(['index', 'show']);
+    Route::patch('/submits/{submit}/status', [\App\Http\Controllers\Admin\AdminSubmitsController::class, 'updateStatus'])->name('submits.updateStatus');
+
+    // Transactions management
+    Route::resource('transactions', \App\Http\Controllers\Admin\AdminTransactionsController::class)->only(['index', 'show']);
+    Route::patch('/transactions/{transaction}/status', [\App\Http\Controllers\Admin\AdminTransactionsController::class, 'updateStatus'])->name('transactions.updateStatus');
 });

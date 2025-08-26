@@ -10,10 +10,10 @@ class AdminAuthController extends Controller
 {
 	public function showLogin()
 	{
-		if (Auth::check()) {
+		if (Auth::guard('admin')->check()) {
 			return redirect()->route('admin.dashboard');
 		}
-		return view('admin.login');
+		return view('admin.auth.login');
 	}
 
 	public function login(Request $request)
@@ -32,8 +32,7 @@ class AdminAuthController extends Controller
 			'mobile' => $request->input('mobile'),
 			'password' => $request->input('password'),
 		];
-
-		if (Auth::attempt($credentials, $remember)) {
+		if (Auth::guard('admin')->attempt($credentials, $remember)) {
 			$request->session()->regenerate();
 			return redirect()->intended(route('admin.dashboard'));
 		}
@@ -43,7 +42,7 @@ class AdminAuthController extends Controller
 
 	public function logout(Request $request)
 	{
-		Auth::logout();
+		Auth::guard('admin')->logout();
 		$request->session()->invalidate();
 		$request->session()->regenerateToken();
 		return redirect()->route('admin.login');

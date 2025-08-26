@@ -1,132 +1,315 @@
-@extends('layouts.admin')
+@extends('admin.layouts.app')
+
+@section('title', 'داشبورد')
+@section('page-title', 'داشبورد')
+
+@section('breadcrumbs')
+    <li class="breadcrumb-item active">داشبورد</li>
+@endsection
 
 @section('content')
-<div class="card" style="margin:16px 0;">
-	<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
-		<h2 class="title">داشبورد مدیریت</h2>
-	</div>
-	@if (session('status'))
-		<div class="alert alert-success" role="alert" style="margin-top:12px;">{{ session('status') }}</div>
-	@endif
-	@if ($errors->any())
-		<div class="alert alert-error" role="alert" style="margin-top:12px;">{{ $errors->first() }}</div>
-	@endif
+<!-- Statistics Cards -->
+<div class="row match-height">
+    <div class="col-xl-3 col-lg-6 col-12">
+        <div class="card">
+            <div class="card-content">
+                <div class="media align-items-stretch">
+                    <div class="p-2 text-center bg-primary bg-darken-2">
+                        <i class="icon-credit-card text-white font-large-2"></i>
+                    </div>
+                    <div class="p-2 media-body">
+                        <h5 class="text-bold-600">پرداخت های موفق</h5>
+                        <h5 class="text-bold-600 text-primary">{{ $successfulPayments }}</h5>
+                        <small class="text-muted">تعداد کل</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-lg-6 col-12">
+        <div class="card">
+            <div class="card-content">
+                <div class="media align-items-stretch">
+                    <div class="p-2 text-center bg-success bg-darken-2">
+                        <i class="icon-wallet text-white font-large-2"></i>
+                    </div>
+                    <div class="p-2 media-body">
+                        <h5 class="text-bold-600">مجموع مبلغ</h5>
+                        <h5 class="text-bold-600 text-success">{{ number_format($totalAmount) }} تومان</h5>
+                        <small class="text-muted">کل پرداخت ها</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-lg-6 col-12">
+        <div class="card">
+            <div class="card-content">
+                <div class="media align-items-stretch">
+                    <div class="p-2 text-center bg-warning bg-darken-2">
+                        <i class="icon-check text-white font-large-2"></i>
+                    </div>
+                    <div class="p-2 media-body">
+                        <h5 class="text-bold-600">درخواست های در انتظار</h5>
+                        <h5 class="text-bold-600 text-info">{{ $requestedSubmits }}</h5>
+                        <small class="text-muted">وضعیت requested</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-lg-6 col-12">
+        <div class="card">
+            <div class="card-content">
+                <div class="media align-items-stretch">
+                    <div class="p-2 text-center bg-info bg-darken-2">
+                        <i class="icon-clock text-white font-large-2"></i>
+                    </div>
+                    <div class="p-2 media-body">
+                        <h5 class="text-bold-600">درخواست های انجام شده</h5>
+                        <h5 class="text-bold-600 text-warning">{{ $doneSubmits }}</h5>
+                        <small class="text-muted">وضعیت done</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="grid" style="grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap:12px;">
-	<div class="card info-card">
-		<div class="info-title">پراستفاده‌ترین نام</div>
-		<div class="info-value">{{ $mostUsedName?->name ?? '—' }}</div>
-		<div class="info-sub">تعداد استفاده: {{ number_format($mostUsedName?->use_count ?? 0) }}</div>
-	</div>
-	<div class="card info-card">
-		<div class="info-title">درخواست‌های در انتظار</div>
-		<div class="info-value">{{ number_format($pendingCount) }}</div>
-	</div>
+<!-- Charts Row -->
+<div class="row match-height">
+    <div class="col-xl-8 col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">آمار پرداخت های ماه جاری</h4>
+            </div>
+            <div class="card-content">
+                <div class="card-body">
+                    <canvas id="paymentChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">وضعیت درخواست ها</h4>
+            </div>
+            <div class="card-content">
+                <div class="card-body">
+                    <canvas id="submitStatusChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="card" style="margin-top:16px;">
-	<h3 class="subtitle">درخواست‌های در انتظار (۵۰ مورد آخر)</h3>
-	<div class="table">
-		<div class="table-row table-header"><div>شماره موبایل</div><div>نام</div></div>
-		@forelse($pendingSubmits as $s)
-			<div class="table-row"><div>{{ $s->mobile }}</div><div>{{ $s->name }}</div></div>
-		@empty
-			<div class="table-row"><div colspan="2">موردی یافت نشد</div></div>
-		@endforelse
-	</div>
+<!-- Recent Requested Submits -->
+<div class="row match-height">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">آخرین درخواست های در انتظار</h4>
+                <a href="{{ route('admin.submits.index') }}" class="btn btn-sm btn-primary float-left">مشاهده همه</a>
+            </div>
+            <div class="card-content">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>نام</th>
+                                    <th>شماره موبایل</th>
+                                    <th>تاریخ درخواست</th>
+                                    <th>وضعیت</th>
+                                    <th>عملیات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($recentRequestedSubmits as $submit)
+                                <tr>
+                                    <td>{{ $submit->name }}</td>
+                                    <td>{{ $submit->mobile }}</td>
+                                    <td>{{ \Morilog\Jalali\Jalalian::fromDateTime($submit->created_at)->format('Y/m/d H:i') }}</td>
+                                    <td>
+                                        <span class="badge badge-warning">در انتظار</span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('admin.submits.show', $submit->id) }}" class="btn btn-sm btn-info">
+                                            <i class="icon-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="5" class="text-center">هیچ درخواستی در انتظار نیست</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="card" style="margin-top:16px;">
-	<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
-		<h3 class="subtitle">فهرست نام‌ها</h3>
-		<form method="GET" action="{{ route('admin.dashboard') }}" style="display:flex;gap:8px;align-items:center;">
-			<label for="sort" style="white-space:nowrap;">مرتب‌سازی:</label>
-			<select name="sort" id="sort" class="input-field" onchange="this.form.submit()">
-				<option value="use_count_desc" {{ $sort==='use_count_desc' ? 'selected' : '' }}>بیشترین استفاده</option>
-				<option value="name_asc" {{ $sort==='name_asc' ? 'selected' : '' }}>الفبا (الف تا ی)</option>
-				<option value="name_desc" {{ $sort==='name_desc' ? 'selected' : '' }}>الفبا (ی تا الف)</option>
-				<option value="latest" {{ $sort==='latest' ? 'selected' : '' }}>جدیدترین</option>
-			</select>
-		</form>
-	</div>
-	<div class="table">
-		<div class="table-row table-header"><div>نام</div><div>تعداد استفاده</div><div>مسیر فایل</div></div>
-		@foreach($names as $n)
-			<div class="table-row"><div>{{ $n->name }}</div><div>{{ number_format($n->use_count) }}</div><div style="overflow:hidden;text-overflow:ellipsis;">{{ $n->path }}</div></div>
-		@endforeach
-	</div>
-	<div style="margin-top:8px;">
-		{{ $names->links() }}
-	</div>
-</div>
+<!-- Names List with Pagination -->
+<div class="row match-height">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">لیست نام ها</h4>
+                <a href="{{ route('admin.names.create') }}" class="btn btn-sm btn-success float-left">
+                    <i class="icon-plus"></i> افزودن نام جدید
+                </a>
+            </div>
+            <div class="card-content">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>نام</th>
+                                    <th>مسیر فایل</th>
+                                    <th>تعداد استفاده</th>
+                                    <th>تاریخ ایجاد</th>
+                                    <th>عملیات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($names as $name)
+                                <tr>
+                                    <td>{{ $name->name }}</td>
+                                    <td>{{ $name->path }}</td>
+                                    <td>{{ $name->use_count }}</td>
+                                    <td>{{ \Morilog\Jalali\Jalalian::fromDateTime($name->created_at)->format('Y/m/d H:i') }}</td>
+                                    <td>
+                                        <a href="{{ route('admin.names.edit', $name->id) }}" class="btn btn-sm btn-warning">
+                                            <i class="icon-note"></i>
+                                        </a>
+                                        <a href="{{ route('admin.names.show', $name->id) }}" class="btn btn-sm btn-info">
+                                            <i class="icon-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="5" class="text-center">هیچ نامی یافت نشد</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
 
-<div class="card" style="margin-top:16px;">
-	<h3 class="subtitle">افزودن نام جدید و ارسال برای درخواست‌ها</h3>
-	<form id="addNameForm" method="POST" action="{{ route('admin.names.store') }}" enctype="multipart/form-data">
-		@csrf
-		<div class="grid" style="grid-template-columns: 1fr 1fr; gap:12px;">
-			<div class="form-group" style="grid-column: span 2;">
-				<label for="name">نام</label>
-				<input type="text" id="name" name="name" class="input-field" placeholder="مثلاً امیر" required>
-			</div>
-			<div class="form-group">
-				<label for="music">فایل موسیقی</label>
-				<div class="dropzone">
-					<div class="label">فایل را اینجا رها کنید یا کلیک کنید</div>
-					<div class="hint">mp3, wav, ogg — حداکثر ۱۰ مگابایت</div>
-					<input type="file" id="music" name="music" accept="audio/*" required>
-					<div class="filename" id="filename">فایلی انتخاب نشده است</div>
-				</div>
-			</div>
-			<div class="form-group">
-				<label>درخواست‌های مطابق (انتخابی)</label>
-				<div id="matches" class="list" style="max-height:220px;overflow:auto;border:1px solid #eee;border-radius:8px;padding:8px;"></div>
-				<small>پس از وارد کردن نام، لیست درخواست‌های مطابق نمایش داده می‌شود.</small>
-			</div>
-		</div>
-		<button type="submit" class="btn-primary">ثبت و ارسال پیامک</button>
-	</form>
+                    @if($names->hasPages())
+                    <div class="d-flex justify-content-center mt-2">
+                        {{ $names->links() }}
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+@endsection
 
+@push('scripts')
 <script>
-$(function(){
-	// filename display
-	$('#music').on('change', function(){
-		var f = this.files && this.files[0] ? this.files[0].name : 'فایلی انتخاب نشده است';
-		$('#filename').text(f);
-	});
+// Pass PHP variables to JavaScript
+window.dashboardData = {
+    doneSubmits: @json($doneSubmits),
+    requestedSubmits: @json($requestedSubmits),
+    prepareSubmits: @json($prepareSubmits ?? 0),
+    currentMonthPayments: @json($currentMonthPayments)
+};
 
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if Chart.js is available
+    if (typeof Chart === 'undefined') {
+        console.warn('Chart.js is not loaded. Charts will not be displayed.');
+        return;
+    }
 
+    // Payment Chart - Last Month Statistics
+    const paymentChart = document.getElementById('paymentChart');
+    if (paymentChart) {
+        const paymentCtx = paymentChart.getContext('2d');
+        new Chart(paymentCtx, {
+            type: 'line',
+            data: {
+                labels: window.dashboardData.currentMonthPayments.labels,
+                datasets: [{
+                    label: 'پرداخت های موفق در ماه ' + window.dashboardData.currentMonthPayments.monthName,
+                    data: window.dashboardData.currentMonthPayments.data,
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                    tension: 0.1,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'روز ماه'
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'آمار پرداخت های موفق در ماه ' + window.dashboardData.currentMonthPayments.monthName
+                    }
+                }
+            }
+        });
+    }
 
-	var fetchTimer = null;
-	$('#name').on('input', function(){
-		clearTimeout(fetchTimer);
-		var name = $(this).val().trim();
-		if (name.length === 0) {
-			$('#matches').html('<div style="color:#888;">—</div>');
-			return;
-		}
-		fetchTimer = setTimeout(function(){
-			$.get("{{ route('admin.submits.byName') }}", { name: name })
-				.done(function(resp){
-					var items = resp.items || [];
-					if (items.length === 0) {
-						$('#matches').html('<div style="color:#888;">موردی یافت نشد</div>');
-						return;
-					}
-					var html = items.map(function(it){
-						return '<label style="display:flex;align-items:center;gap:8px;margin:4px 0;">'
-							+ '<input type="checkbox" name="submits[]" value="'+it.id+'">'
-							+ '<span style="direction:ltr;">'+it.mobile+'</span>'
-							+ '<span style="color:#666;">('+it.name+')</span>'
-							+ '</label>';
-					}).join('');
-					$('#matches').html(html);
-				})
-				.fail(function(){ showError('خطا در دریافت درخواست‌های مطابق'); });
-		}, 500);
-	});
+    // Submit Status Chart - Only Requested and Done
+    const submitChart = document.getElementById('submitStatusChart');
+    if (submitChart) {
+        const submitCtx = submitChart.getContext('2d');
+        new Chart(submitCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['در انتظار', 'انجام شده'],
+                datasets: [{
+                    data: [window.dashboardData.requestedSubmits, window.dashboardData.doneSubmits],
+                    backgroundColor: [
+                        'rgb(255, 205, 86)', // Warning color for requested
+                        'rgb(54, 162, 235)'  // Info color for done
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'وضعیت درخواست ها'
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
 });
 </script>
-@endsection
+@endpush

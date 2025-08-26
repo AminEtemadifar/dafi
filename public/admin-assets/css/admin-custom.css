@@ -1,0 +1,136 @@
+/* Custom Admin Panel Styles */
+
+/* Fix sidebar and content layout */
+.app-content {
+    margin-right: 250px; /* Match sidebar width */
+    transition: margin-right 0.3s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.wrapper.nav-collapsed .app-content {
+    margin-right: 60px; /* Match collapsed sidebar width */
+}
+
+.wrapper.nav-collapsed .app-content:hover {
+    margin-right: 250px; /* Expand margin when sidebar expands */
+}
+
+/* Ensure content body has proper spacing */
+.content-body {
+    padding: 20px 0;
+}
+
+/* Fix for mobile devices */
+@media (max-width: 991.98px) {
+    .app-content {
+        margin-right: 0;
+    }
+    
+    .app-sidebar {
+        transform: translate3d(100%, 0, 0);
+    }
+    
+    .app-sidebar.show-sidebar {
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+/* Ensure proper z-index for sidebar */
+.app-sidebar {
+    z-index: 1030;
+}
+
+/* Fix for content header */
+.content-header {
+    margin-bottom: 20px;
+}
+
+/* Ensure proper spacing for cards */
+.card {
+    margin-bottom: 20px;
+}
+
+/* Fix for table responsiveness */
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* Custom styles for better RTL support */
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    padding-right: 0.5rem;
+    padding-left: 0;
+}
+
+.float-left {
+    float: right !important;
+}
+
+.float-right {
+    float: left !important;
+}
+
+/* Fix for chart containers */
+canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Ensure proper spacing for statistics cards */
+.match-height .card {
+    height: 100%;
+}
+
+/* Fix for navigation items */
+.navigation li a {
+    padding: 12px 20px;
+    display: block;
+    color: inherit;
+    text-decoration: none;
+}
+
+.navigation li a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Fix for active navigation items */
+.navigation li.active a {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Ensure proper spacing for forms */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+/* Fix for buttons in cards */
+.card-header .btn {
+    margin-left: 10px;
+}
+
+/* Ensure proper spacing for pagination */
+.pagination {
+    justify-content: center;
+}
+
+/* Fix for alerts */
+.alert {
+    margin-bottom: 1rem;
+}
+
+/* Custom scrollbar for sidebar */
+.app-sidebar .sidebar-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.app-sidebar .sidebar-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.app-sidebar .sidebar-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+.app-sidebar .sidebar-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}

@@ -1,0 +1,292 @@
+@extends('admin.layouts.app')
+
+@section('title', 'لیست نام ها')
+@section('page-title', 'لیست نام ها')
+
+@section('breadcrumbs')
+    <li class="breadcrumb-item active">نام ها</li>
+@endsection
+
+@section('content')
+<div class="row match-height">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">لیست نام ها</h4>
+                <a href="{{ route('admin.names.create') }}" class="btn btn-sm btn-success float-left">
+                    <i class="icon-plus"></i> افزودن نام جدید
+                </a>
+            </div>
+            <div class="card-content">
+                <div class="card-body">
+                    <!-- Search and Filter Form -->
+                    <form method="GET" action="{{ route('admin.names.index') }}" class="mb-3">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="search">جستجو</label>
+                                    <input type="text" class="form-control" id="search" name="search"
+                                           placeholder="جستجو بر اساس نام..." value="{{ request('search') }}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="sort">مرتب سازی</label>
+                                    <select class="form-control" id="sort" name="sort">
+                                        <option value="name_asc" {{ request('sort') == 'name_asc' ? 'selected' : '' }}>نام (الف تا ی)</option>
+                                        <option value="name_desc" {{ request('sort') == 'name_desc' ? 'selected' : '' }}>نام (ی تا الف)</option>
+                                        <option value="use_count_desc" {{ request('sort') == 'use_count_desc' ? 'selected' : '' }}>بیشترین استفاده</option>
+                                        <option value="use_count_asc" {{ request('sort') == 'use_count_asc' ? 'selected' : '' }}>کمترین استفاده</option>
+                                        <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>جدیدترین</option>
+                                        <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>قدیمی ترین</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="per_page">تعداد در صفحه</label>
+                                    <select class="form-control" id="per_page" name="per_page">
+                                        <option value="10" {{ request('per_page') == '10' ? 'selected' : '' }}>10</option>
+                                        <option value="25" {{ request('per_page') == '25' ? 'selected' : '' }}>25</option>
+                                        <option value="50" {{ request('per_page') == '50' ? 'selected' : '' }}>50</option>
+                                        <option value="100" {{ request('per_page') == '100' ? 'selected' : '' }}>100</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>&nbsp;</label>
+                                    <div>
+                                        <button type="submit" class="btn btn-primary btn-sm">
+                                            <i class="icon-search"></i> جستجو
+                                        </button>
+                                        <a href="{{ route('admin.names.index') }}" class="btn btn-secondary btn-sm">
+                                            <i class="icon-refresh"></i> پاک کردن
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Names Table -->
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered" id="namesTable">
+                            <thead>
+                                <tr>
+                                    <th>نام</th>
+                                    <th>مسیر فایل</th>
+                                    <th>تعداد استفاده</th>
+                                    <th>تاریخ ایجاد</th>
+                                    <th>عملیات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($names as $name)
+                                <tr>
+                                    <td>{{ $name->name }}</td>
+                                    <td>
+                                        <span class="text-truncate d-inline-block" style="max-width: 200px;" title="{{ $name->path }}">
+                                            {{ $name->path }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-info">{{ number_format($name->use_count) }}</span>
+                                    </td>
+                                    <td>{{ \Morilog\Jalali\Jalalian::fromDateTime($name->created_at)->format('Y/m/d H:i') }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ route('admin.names.show', $name->id) }}" class="btn btn-sm btn-info" title="مشاهده">
+                                                <i class="icon-eye"></i>
+                                            </a>
+                                            <a href="{{ route('admin.names.edit', $name->id) }}" class="btn btn-sm btn-warning" title="ویرایش">
+                                                <i class="icon-note"></i>
+                                            </a>
+                                            {{--<button type="button" class="btn btn-sm btn-danger" title="حذف"
+                                                    onclick="deleteName({{ $name->id }}, '{{ $name->name }}')">
+                                                <i class="icon-trash"></i>
+                                            </button>--}}
+                                        </div>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="5" class="text-center">هیچ نامی یافت نشد</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    @if($names->hasPages())
+                    <div class="d-flex justify-content-center mt-3">
+                        <div class="pagination-wrapper">
+                            {{ $names->appends(request()->query())->links() }}
+                        </div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">تایید حذف</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                آیا از حذف نام "<span id="deleteNameText"></span>" اطمینان دارید؟
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">انصراف</button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">حذف</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+@push('styles')
+<style>
+/* Responsive Pagination Styles */
+.pagination-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pagination li {
+    margin: 0;
+}
+
+.pagination .page-link {
+    padding: 8px 12px;
+    border: 1px solid #dee2e6;
+    background-color: #fff;
+    color: #007bff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    min-width: 40px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination .page-link:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+    color: #0056b3;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #fff;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+    background-color: #fff;
+    border-color: #dee2e6;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .pagination .page-link {
+        padding: 6px 8px;
+        min-width: 35px;
+        font-size: 14px;
+    }
+    
+    .pagination .page-item:not(.active):not(.disabled) .page-link {
+        display: none;
+    }
+    
+    .pagination .page-item.active .page-link,
+    .pagination .page-item.disabled .page-link,
+    .pagination .page-item:first-child .page-link,
+    .pagination .page-item:last-child .page-link {
+        display: flex;
+    }
+    
+    .pagination .page-item:nth-child(2) .page-link,
+    .pagination .page-item:nth-last-child(2) .page-link {
+        display: flex;
+    }
+}
+
+@media (max-width: 576px) {
+    .pagination .page-link {
+        padding: 5px 6px;
+        min-width: 30px;
+        font-size: 12px;
+    }
+    
+    .pagination-wrapper {
+        padding: 0 10px;
+    }
+}
+
+/* Hide page numbers on very small screens, show only navigation */
+@media (max-width: 480px) {
+    .pagination .page-item:not(.active):not(.disabled):not(:first-child):not(:last-child) .page-link {
+        display: none;
+    }
+    
+    .pagination .page-item.active .page-link {
+        min-width: 40px;
+        padding: 6px 10px;
+    }
+}
+</style>
+@endpush
+
+@push('scripts')
+<script>
+function deleteName(id, name) {
+    document.getElementById('deleteNameText').textContent = name;
+    document.getElementById('deleteForm').action = '{{ route("admin.names.index") }}/' + id;
+    $('#deleteModal').modal('show');
+}
+
+// Initialize DataTable
+$(document).ready(function() {
+    $('#namesTable').DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Persian.json"
+        },
+        "pageLength": {{ request('per_page', 10) }},
+        "order": [[0, "asc"]],
+        "responsive": true,
+        "paging": false,
+        "searching": false, // We're using our custom search form
+        "info": false // We're using our custom pagination
+    });
+});
+</script>
+@endpush
