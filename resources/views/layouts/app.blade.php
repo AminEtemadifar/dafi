@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="{{ asset('assets/fonts/Kalameh%204/kalameh-fa.css') }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <title>موسیقی بهاری - دافی</title>
+    <link rel="icon" type="image/png" href="{{  asset('admin-assets/img/logo.png') }}">
+
 </head>
 <body>
     <!-- Loading Overlay -->
@@ -25,7 +27,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
     <script>
-        $.ajaxSetup({ 
+        $.ajaxSetup({
             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
             beforeSend: function() {
                 showLoading();
@@ -99,7 +101,7 @@
         });
 
         // Initial warm animation for default visible component
-        $(function(){ 
+        $(function(){
             animateComponent('welcome');
             // Hide loading on page load
             hideLoading();

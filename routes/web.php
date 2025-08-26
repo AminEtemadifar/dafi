@@ -54,3 +54,7 @@ Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function
     Route::resource('transactions', \App\Http\Controllers\Admin\AdminTransactionsController::class)->only(['index', 'show']);
     Route::patch('/transactions/{transaction}/status', [\App\Http\Controllers\Admin\AdminTransactionsController::class, 'updateStatus'])->name('transactions.updateStatus');
 });
+
+Route::get('login', function () {
+    return redirect()->route('admin.login');
+})->name('login');
