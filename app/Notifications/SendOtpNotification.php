@@ -19,7 +19,8 @@ class SendOtpNotification extends Notification
 
     public function toPayamakYab($notifiable): array
     {
-        $text = "کد تایید شما: {$this->otp}  لغو11";
+        $text = "کد تایید شما: {$this->otp}\nلغو11";
+
         return [
             'to' => $this->mobile,
             'text' => $text,

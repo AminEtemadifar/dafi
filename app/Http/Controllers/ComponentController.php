@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Submit;
+use App\Notifications\SendOtpNotification;
 use App\RequestStatusEnum;
 use App\Services\MusicServiceInterface;
 use Illuminate\Http\JsonResponse;
@@ -53,7 +54,7 @@ class ComponentController extends Controller
             $submit->save();
 
             // Send SMS via notification channel
-            //$submit->notify(new SendOtpNotification($submit->mobile, $otp));
+            $submit->notify(new SendOtpNotification($submit->mobile, $otp));
 
             return response()->json([
                 'success' => true,

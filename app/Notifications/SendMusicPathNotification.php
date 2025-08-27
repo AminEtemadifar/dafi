@@ -21,7 +21,7 @@ class SendMusicPathNotification extends Notification
 
 	public function toPayamakYab($notifiable): array
 	{
-		$text = "لینک موزیک شما برای نام {$this->name}: {$this->musicUrl}  لغو11";
+        $text = "لینک موزیک شما برای نام {$this->name}: {$this->musicUrl}\nلغو11";
 		return [
 			'to' => $this->mobile,
 			'text' => $text,
