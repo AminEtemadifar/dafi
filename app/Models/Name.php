@@ -16,4 +16,9 @@ class Name extends Model
         'path',
         'use_count',
     ];
+
+    public function getPathAttribute($value)
+    {
+        return "music/" . $value;
+    }
 }

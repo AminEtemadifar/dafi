@@ -8,6 +8,7 @@
     <meta name="keywords" content="admin panel, دافی, ادمین">
     <meta name="author" content="دافی">
     <title>@yield('title', 'پنل ادمین') - دافی</title>
+    <link rel="icon" type="image/png" href="{{  asset('admin-assets/img/logo.png') }}">
 
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">

@@ -26,7 +26,7 @@ class MusicService implements MusicServiceInterface
         // Increment use count
         $record->increment('use_count');
 
-        return $record->path;
+        return "storage/" . $record->path;
     }
 
     private function normalizeName(string $name): string

@@ -75,7 +75,7 @@ class AdminNamesController extends Controller
         // Create name record
         $name = Name::create([
             'name' => $request->name,
-            'path' => $path,
+            'path' => $fileName,
             'use_count' => 0
         ]);
 
