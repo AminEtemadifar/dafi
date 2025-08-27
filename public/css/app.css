@@ -261,6 +261,15 @@ h2 {
     transform: translateY(-1px);
 }
 
+/* Error message style */
+.error-message {
+    color: #B61146;
+    font-size: 12px;
+    text-align: right;
+    padding: 5px 23px 0;
+    display: none;
+}
+
 /* Component base visibility */
 .component { display: none; }
 .component.active { display: block; }
@@ -318,6 +327,7 @@ h2 {
 .player-btn { background: none; border: none; outline: none; font-size: 2em; color: #4A2A70; cursor: pointer; transition: color 0.2s; display: flex; align-items: center; justify-content: center; }
 .player-btn:active, .player-btn:focus { color: #B61146; }
 .player-btn svg { display: block; }
+.player-controls-row .player-btn { font-size: 1.6em; margin: 0 18px; color: #4A2A70; }
 .player-actions-row { display: flex; justify-content: center; align-items: center; margin-top: 18px; gap: 32px; }
 .player-actions-row .player-btn { font-size: 1.6em; margin: 0 18px; color: #4A2A70; }
 .music-banner-box { width: 100%; height: 138px; position: relative; margin-bottom: 34px; background: none; border-radius: 20px; overflow: hidden; display: flex; align-items: stretch; }

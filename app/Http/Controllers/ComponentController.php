@@ -54,7 +54,7 @@ class ComponentController extends Controller
             $submit->save();
 
             // Send SMS via notification channel
-            $submit->notify(new SendOtpNotification($submit->mobile, $otp));
+            //$submit->notify(new SendOtpNotification($submit->mobile, $otp));
 
             return response()->json([
                 'success' => true,

@@ -4,7 +4,7 @@
 <form id="otpForm">
     <div>
         <div class="form-group">
-            <label for="otp-input">کد ارسال شده به شماره <span id="mobileNumber">09012959494</span> را وارد کنید</label>
+            <label for="otp-input">کد ارسال شده به شماره <span id="mobileNumber">@php echo session('user_mobile') @endphp</span> را وارد کنید</label>
             <input type="text" id="otp-input" name="otp" class="input-field" placeholder="- - - -" maxlength="4" required>
         </div>
         <button type="submit" class="btn-primary">تایید</button>
