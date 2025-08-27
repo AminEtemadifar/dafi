@@ -69,7 +69,7 @@ class AdminNamesController extends Controller
 
         // Handle file upload
         $file = $request->file('music');
-        $fileName = time() . '_' . $file->getClientOriginalName();
+        $fileName = $file->getClientOriginalName();
         $path = $file->storeAs('music', $fileName, 'public');
 
         // Create name record
