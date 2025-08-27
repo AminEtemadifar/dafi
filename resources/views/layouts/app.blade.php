@@ -107,5 +107,16 @@
             hideLoading();
         });
     </script>
+    @if(session('deliver_step')  && session('user_mobile') && session('user_name') )
+        <script>
+            window.__DELIVER_MUSIC_PATH__ = @json(session('deliver_music_path'));
+            document.addEventListener('DOMContentLoaded', function() {
+                loadComponent('deliver');
+            });
+            @php session()->forget('deliver_music_path'); @endphp
+            @php session()->forget('deliver_step'); @endphp
+        </script>
+    @endif
+
 </body>
 </html>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Submit;
 use App\Models\Transaction;
 use App\RequestStatusEnum;
+use App\Services\MusicServiceInterface;
 use App\Services\Payment\PaymentManager;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -54,7 +55,7 @@ class PaymentController extends Controller
 		return redirect()->away($result['redirect_url']);
 	}
 
-	public function callback(Request $request, PaymentManager $payments): RedirectResponse
+	public function callback(Request $request, PaymentManager $payments , MusicServiceInterface $musicService): RedirectResponse
 	{
 		$amount = (int) Config::get('payment.amount', 100000);
 		$driver = $payments->driver();
@@ -77,10 +78,18 @@ class PaymentController extends Controller
 			if ($tx && $tx->submit_id) {
 				$submit = Submit::find($tx->submit_id);
 				if ($submit) {
-					$submit->request_status = RequestStatusEnum::REQUESTED->value; // move to requested for admin to process
-					$submit->save();
+                    $name = session('user_name');
+                    $musicPath = $name ? $musicService->getMusicPathForName($name) : null;
+                    session(['deliver_music_path' => $musicPath]);
+                    if ($musicPath) {
+                        $submit->request_status = RequestStatusEnum::DONE->value;
+                    } else {
+                        $submit->request_status = RequestStatusEnum::REQUESTED->value;
+                    }
+                    $submit->save();
 				}
 			}
+            session(['deliver_step' => true]);
 			return redirect('/')->with('status', 'پرداخت با موفقیت انجام شد. کد پیگیری: ' . ($verify['ref_id'] ?? ''));
 		}
 
