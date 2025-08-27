@@ -47,14 +47,17 @@ class ComponentController extends Controller
             // Save to session for later steps
             session(['user_mobile' => $submit->mobile, 'user_name' => $submit->name]);
 
-            // Generate OTP and expiry (e.g., 5 minutes)
-            $otp = (string)random_int(1000, 9999);
-            $submit->otp_code = $otp;
-            $submit->otp_expires_at = now()->addMinutes(5);
-            $submit->save();
+            if (empty($submit->otp_code) && (empty($submit->otp_expires_at) || $submit->otp_expires_at < now()->subMinute())){
+                // Generate OTP and expiry (e.g., 5 minutes)
+                $otp = (string)random_int(1000, 9999);
+                $submit->otp_code = $otp;
+                $submit->otp_expires_at = now()->addMinutes(5);
+                $submit->save();
 
-            // Send SMS via notification channel
-            //$submit->notify(new SendOtpNotification($submit->mobile, $otp));
+                // Send SMS via notification channel
+                $submit->notify(new SendOtpNotification($submit->mobile, $otp));
+            }
+
 
             return response()->json([
                 'success' => true,
