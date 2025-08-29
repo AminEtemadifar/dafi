@@ -8,13 +8,13 @@ class ZarinpalGateway implements PaymentGatewayInterface
 {
 	public function __construct(
 		private string $merchantId,
-		private bool $sandbox = true,
+		private bool $sandbox,
 		private int $timeout = 15,
 	) {}
 
 	private function apiBase(): string
 	{
-        $base = $this->sandbox ? 'https://sandbox.zarinpal.com/pg/v4' : 'https://sandbox.zarinpal.com/pg/v4';
+        $base = $this->sandbox ? 'https://sandbox.zarinpal.com/pg/v4' : 'https://api.zarinpal.com/pg/v4';
         return $base;
 	}
 
@@ -38,8 +38,8 @@ class ZarinpalGateway implements PaymentGatewayInterface
 		];
 
 		$response = Http::timeout($this->timeout)->asJson()->post($this->apiBase() . '/payment/request.json', $payload);
-		$data = $response->json('data');
-		$authority = is_array($data) ? ($data['authority'] ?? null) : null;
+        $data =$response->json('data');
+        $authority = is_array($data) ? ($data['authority'] ?? null) : null;
 		if (!$response->ok() || ! $authority) {
 			return [
 				'redirect_url' => '',

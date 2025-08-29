@@ -14,7 +14,7 @@ class PaymentManager
 			default:
 				return new ZarinpalGateway(
 					(string) Config::get('payment.drivers.zarinpal.merchant_id', ''),
-					(bool) Config::get('payment.drivers.zarinpal.sandbox', true),
+					(bool) Config::get('payment.drivers.zarinpal.sandbox', false),
 					(int) Config::get('payment.drivers.zarinpal.timeout', 15)
 				);
 		}
