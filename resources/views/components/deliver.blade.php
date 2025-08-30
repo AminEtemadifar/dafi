@@ -56,10 +56,15 @@
 <div class="player-actions-row" id="player-actions-row">
     <button class="player-btn" id="share-btn" title="اشتراک‌گذاری">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M18 8.59V7a5 5 0 10-10 0v1.59" stroke="#4A2A70" stroke-width="2" stroke-linecap="round"/>
-            <path d="M12 12v7" stroke="#4A2A70" stroke-width="2" stroke-linecap="round"/>
-            <path d="M8 16l4 4 4-4" stroke="#4A2A70" stroke-width="2" stroke-linecap="round"/>
+            <!-- connection lines -->
+            <path d="M9 12l6-3" stroke="#4A2A70" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 12l6 3" stroke="#4A2A70" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- nodes -->
+            <circle cx="18" cy="6" r="3" stroke="#4A2A70" stroke-width="2"/>
+            <circle cx="6" cy="12" r="3" stroke="#4A2A70" stroke-width="2"/>
+            <circle cx="18" cy="18" r="3" stroke="#4A2A70" stroke-width="2"/>
         </svg>
+
     </button>
     <button class="player-btn" id="download-btn" title="دانلود">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -184,7 +189,7 @@
         };
         shareBtn.onclick = function () {
             if (navigator.share) {
-                navigator.share({title: 'موزیک شما آماده است', text: 'همین حالا پلی کن!', url: window.location.href});
+                navigator.share({title: 'موزیک شما آماده است', text: 'همین حالا پلی کن!', url: audio.src});
             } else {
                 alert('مرورگر شما از اشتراک‌گذاری پشتیبانی نمی‌کند.');
             }

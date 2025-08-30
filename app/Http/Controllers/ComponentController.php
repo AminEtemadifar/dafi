@@ -47,7 +47,7 @@ class ComponentController extends Controller
             // Save to session for later steps
             session(['user_mobile' => $submit->mobile, 'user_name' => $submit->name]);
 
-            if (empty($submit->otp_expires_at) || $submit?->otp_expires_at > now()->subMinute()){
+            if (empty($submit->otp_expires_at) || $submit?->otp_expires_at < now()->subMinute()){
                 // Generate OTP and expiry (e.g., 5 minutes)
                 $otp = (string)random_int(1000, 9999);
                 $submit->otp_code = $otp;
